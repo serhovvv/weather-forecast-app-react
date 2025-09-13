@@ -62,7 +62,10 @@ function App() {
                 onLocationSearch={fetchWeatherByLocation}
                 loading={loading}
               />
-              <TemperatureToggle unit={unit} onToggle={toggleUnit} />
+
+              {currentWeather && !loading && (
+                <TemperatureToggle unit={unit} onToggle={toggleUnit} />
+              )}
             </div>
             {/* {Main Content} */}
             <div className="space-y-8">

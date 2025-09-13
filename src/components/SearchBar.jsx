@@ -7,6 +7,7 @@ function SearchBar({ onSearch, onLocationSearch, loading }) {
   const [suggestion, setSuggestions] = useState([]);
   const [showSuggestion, setShowSuggestions] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const searchRef = useRef();
 
@@ -60,6 +61,29 @@ function SearchBar({ onSearch, onLocationSearch, loading }) {
     onSearch(cityName);
     setQuery("");
   };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIndex((prev) => (prev + 1) % suggestion.length);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+
+      setActiveIndex((prev) => (prev > 0 ? prev - 1 : suggestion.length - 1));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+
+      if (activeIndex >= 0) {
+        const city = suggestion[activeIndex];
+        const cityName = city.name ? `${city.name}, ${city.state}` : city.name;
+
+        setQuery("");
+        onSearch(cityName);
+        setShowSuggestions(false);
+      }
+    }
+  };
+
   return (
     <div className="relative w-full max-w-2xl" ref={searchRef}>
       <form className="relative" onSubmit={handleSubmit}>
@@ -70,7 +94,10 @@ function SearchBar({ onSearch, onLocationSearch, loading }) {
           />
           <input
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value);
+            }}
+            onKeyDown={handleKeyDown}
             type="text"
             placeholder="Search for any city of worldwide..."
             className="w-full pl-12 pr-24 py-4 bg-white/10 backdrop-blur-xl border border-white/20 
@@ -115,8 +142,11 @@ function SearchBar({ onSearch, onLocationSearch, loading }) {
             suggestion.map((city, index) => {
               return (
                 <button
-                  className="w-full px-6 py-4 text-left hover:bg-white/10 transition-all duration-200
-         flex items-center justify-between group border-b border-white/10 last:border-b-0"
+                  type="button"
+                  className={`w-full px-6 py-4 text-left hover:bg-white/10 transition-all duration-200
+         flex items-center justify-between group border-b border-white/10 last:border-b-0 ${
+           index === activeIndex ? "bg-white/10" : "hover:bg-white/10"
+         }`}
                   key={`${city.name}-${city.country}-${index}`}
                   onClick={() => handleSuggestionsClick(city)}
                 >

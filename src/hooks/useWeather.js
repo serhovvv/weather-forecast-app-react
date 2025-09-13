@@ -56,10 +56,6 @@ export const useWeather = () => {
     const toggleUnit = () =>{
         setUnits(unit === "C" ? "F" : "C")
     }
-    // Load default weather on mount
-    useEffect(()=> {
-        fetchWeatherByCity("New York")
-    },[])
 
     return {currentWeather, forecast,loading,error,unit,fetchWeatherByCity,fetchWeatherByLocation,toggleUnit}
 
